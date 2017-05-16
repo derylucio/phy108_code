@@ -8,12 +8,14 @@
 
 # for the timestamp:
 from time import gmtime, strftime
+import os
 
 
 #Need to put third instrument into the following list:
 TEMP_ADAPTERS = ["GPIB0::2::INSTR" , "GPIB0::3::INSTR"]  
 TIME_DELAY = 0.1
-OUTPUT_FILE = "tc_calibration_file" + strftime("%Y-%m-%d %H-%M-%S", gmtime()) + ".txt" # puts timestamp on filename
+dirname = os.getcwd()
+OUTPUT_FILE = dirname + "tc_calibration_file" + strftime("%Y-%m-%d %H-%M-%S", gmtime()) + ".txt" # puts timestamp on filename
 
  
 if __name__ == "__main__":
