@@ -19,7 +19,6 @@ TODAY = date.today()
 OUTPUT_FILE = 'seebeck_out_T1_' + str(TEMPERATURES[0]) + "_T2_" + str(TEMPERATURES[1])  + \
                 "_D_" + str(TODAY.year) + "-" + str(TODAY.month)  + "-" +str(TODAY.day)
 
- 
 if __name__ == "__main__":
     run = 1 # change this if we run multiple times in a day
     OUTPUT_FILE += "_" + str(run)
@@ -54,6 +53,3 @@ if __name__ == "__main__":
                 pid = controllers[index]
                 requiredVoltages[index] = pid.getUpdate(temp) # let the pid tell us what voltage to supply
 
-#TODO: 
-# FIGURE OUT TIMESCALES 
-# FIGURE OUT ACCCESSING MULTIPLE CHANNELS
