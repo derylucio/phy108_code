@@ -4,40 +4,42 @@
 # Note, this code currently works under the assumption that the CERNOX thermometer can be treated 
 # the same way as the DMMs.  In the case that this isn't true, will need to modify the code. 
 
-# Last Edit: 5/14/17 - 10:15PM Mirae 
+# Last Edit: 5/16/17 - 10:15AM Mirae 
 
 # for the timestamp:
-from time import gmtime, strftime
+#from time import gmtime, strftime
+import time
 import os
+import visa
 from tempReader import *
-from thermoReader import *
 
 
 #Need to put third instrument into the following list:
-TEMP_ADAPTERS = ["GPIB0::2::INSTR" , "GPIB0::3::INSTR"] 
-CERNOX_ADAPTER = "GPIB0::30::INSTR" 
+TEMP_ADAPTERS = [ "GPIB0::2::INSTR", "GPIB0::3::INSTR"] 
+CERNOX_ADAPTER = ["GPIB0::30::INSTR"] 
 TIME_DELAY = 0.1
-dirname = os.getcwd()
-OUTPUT_FILE = dirname + "tc_calibration_file" + strftime("%Y-%m-%d %H-%M-%S", gmtime()) + ".txt" # puts timestamp on filename
+dirname = "C:\\Users\\Student\\Desktop\\P108 Users\\ThermoElectric\\phy108_code-master\\TempCalFiles\\"
+OUTPUT_FILE = dirname + "tc_calibration_file" + time.strftime("%Y-%m-%d %H-%M-%S", time.gmtime()) + ".txt" # puts timestamp on filename
 
  
 if __name__ == "__main__":
 
-	file = open(OUTPUT_FILE, "w+") #if file doesn't already exist, will create it. 
+    file = open(OUTPUT_FILE, "w+") #if file doesn't already exist, will create it. 
     tempReaders = [initTempReader(adapter) for adapter in TEMP_ADAPTERS]
-	themometers = [initThermoReader(adapter) for adapter in CERNOX_ADAPTER]
+    themometers = [initTempReader(adapter) for adapter in CERNOX_ADAPTER]
     temperatures = [readTemp(tempReader) for tempReader in tempReaders] 
-	thermotemp = [readThermo(adapter) for adapter in CERNOX_ADAPTER]
-	starter_string = "voltage from TC One " + "Voltage from TC Two " + "Temperature from Thermometer "
+    thermotemp = [readTemp(adapter, "KRDG?") for adapter in themometers]
+    starter_string = "TC One " + "TC Two " + "Thermometer \n"
     file.write(starter_string)
+    while(1):
+		if(thermotemp[0] < 280):
+			time.sleep(TIME_DELAY)
+			temperatures = [readTemp(tempReader) for tempReader in tempReaders]
+			thermotemp = [readTemp(adapter, "KRDG?") for adapter in themometers]
+			print temperatures, thermotemp
+			update_string = str(temperatures[0]) + "," + str(temperatures[1]) + "," + str(thermotemp[0]) + '\n' # ','.join(array)
+			file.write(update_string)
 	
-	#want to wait until it recalibrates - figure out a reasonable value
-    while(thermotemp[0] < 100):
-        time.sleep(TIME_DELAY) # wait for some time 
-        temperatures = [readTemp(tempReader) for tempReader in tempReaders] # read the temperatures from all devices
-		update_string = str(temperatures[0] + "," + temperatures[1] + "," + thermotemp[0])
-		file.write(update_string)
-	
-	file.close()
+    file.close()
 
 

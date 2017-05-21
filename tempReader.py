@@ -6,7 +6,8 @@ def initTempReader(adapter):
     return reader 
 
 
-def readTemp(instr):
-    voltage = instr.query_ascii_values("READ?")
+def readTemp(instr, q_str = "READ?"):
+    print instr, q_str
+    voltage = instr.query_ascii_values(q_str)
     temp = voltage[0] # TODO: CALCULATE BASED OFF OF REFERENCE INFORMATION FOR THERMOCOUPLE.
     return temp
